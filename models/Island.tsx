@@ -10,7 +10,8 @@ import { useEffect, useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 
-export default function Island({isRotating, setIsRotating, setCurrentStage, scale, ...props}: {isRotating: boolean, setIsRotating: (isRotating: boolean) => void, setCurrentStage: (stage: number) => void, scale?: [number, number, number] | null} & any) {
+
+export default function Island({isRotating, setIsRotating, setCurrentStage, scale, setNormalizedRotation, ...props}: {isRotating: boolean, setIsRotating: (isRotating: boolean) => void, setCurrentStage: (stage: number) => void, scale?: [number, number, number] | null, setNormalizedRotation?: (rotation: number) => void} & any) {
   const { nodes, materials } = useGLTF('/scene.gltf')
   const { gl, viewport } = useThree()
   const islandRef = useRef<THREE.Group>(null)
@@ -19,8 +20,8 @@ export default function Island({isRotating, setIsRotating, setCurrentStage, scal
   const rotationSpeed = useRef(0)
   const keyPressed = useRef<string | null>(null)
   const dampingFactor = 0.95
-  const keyRotationSpeed = 0.015
-  const pointerSpeed = 0.001
+  const keyRotationSpeed = 0.01
+  const pointerSpeed = 0.0075
 
 
   useFrame(() => {
@@ -37,6 +38,29 @@ export default function Island({isRotating, setIsRotating, setCurrentStage, scal
       }
     }
 
+    // Determine current section based on rotation (4 sections)
+    const rotation = islandRef.current.rotation.y
+    // Normalize rotation to 0-2π range
+    const normalizedRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)
+    setNormalizedRotation(normalizedRotation)
+    
+    // Set current stage based on quadrant (each section is π/2 or 90 degrees)
+    /* 
+    Section 1: 3π/2 to 2π (270-360°)
+    Section 2: π to 3π/2 (180-270°)
+    Section 3: π/2 to π (90-180°)
+    Section 4: 0 to π/2 (0-90°)
+    */
+    if (normalizedRotation >= 0 && normalizedRotation < Math.PI / 2) {
+      setCurrentStage(4)
+    } else if (normalizedRotation >= Math.PI / 2 && normalizedRotation < Math.PI) {
+      setCurrentStage(3)
+    } else if (normalizedRotation >= Math.PI && normalizedRotation < 3 * Math.PI / 2) {
+      setCurrentStage(2)
+    } else {
+      setCurrentStage(1)
+    }
+
   })
   // Holding down to rotate -> set isRotating to true
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -50,7 +74,7 @@ export default function Island({isRotating, setIsRotating, setCurrentStage, scal
     lastX.current = clientX     
     const delta = (clientX - lastX.current)/ viewport.width
     lastX.current = clientX 
-    rotationSpeed.current = delta * pointerSpeed * Math.PI
+    rotationSpeed.current = delta * pointerSpeed * Math.PI 
   }
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -106,6 +130,7 @@ export default function Island({isRotating, setIsRotating, setCurrentStage, scal
   }, [gl, handlePointerDown, handlePointerUp, handlePointerMove])
 
   return (
+    <>
     <group ref = {islandRef} {...props} position = {[0,0,-4.25]} rotation = {[0.1,-0.05,0]} scale = {scale || [1,1,1]}>
     <group dispose={null}>
       <group scale={0.05}>
@@ -360,5 +385,6 @@ export default function Island({isRotating, setIsRotating, setCurrentStage, scal
       </group>
     </group>
     </group>
+    </>
   )
 }

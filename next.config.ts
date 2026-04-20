@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     turbopackFileSystemCacheForBuild: true,
     turbopackFileSystemCacheForDev: true,
     // optimizeServerReact: true,
-    optimizePackageImports: ["three", "@react-three/fiber", "@react-three/drei", "gsap", "@gsap/react"],
+    optimizePackageImports: ["three", "@react-three/fiber", "@react-three/drei", "gsap", "@gsap/react", "motion"],
     optimizeCss: true,
   },
   // reactCompiler: true,

@@ -1,26 +1,26 @@
 "use client"
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, Activity } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Html, useGLTF } from "@react-three/drei";
+import { motion } from "motion/react"
 import { Spinner } from "@/components/ui/spinner";
 import Island from "@/models/Island";
 import Sky from "@/models/Sky";
 import Plane from "@/models/Plane";
 import Bird from "@/models/Bird";
+import HomeInfo from "@/components/HomeInfo";
 
 // Preload models
 useGLTF.preload("/plane.glb")
 useGLTF.preload("/bird.glb")
 useGLTF.preload("/scene.gltf")
 
-{/* <div className = "absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
-  Popup
-</div> */}
 
 export default function Home() {
   const [screenScale, setScreenScale] = useState<[number, number, number] | null>(null);
   const [isRotating, setIsRotating] = useState<boolean>(false)
   const [currentStage, setCurrentStage] = useState<number>(1)
+  const [normalizedRotation, setNormalizedRotation] = useState<number>(0)
   
   useEffect(() => {
   const adjustIsland = () => {
@@ -37,8 +37,20 @@ export default function Home() {
   }, [])
 
   return (
+    <>
+    {/* Progress bar */}
+    <motion.div
+    className = "absolute top-0 right-0 w-2 bg-linear-to-b from-white to-blue-800 z-100"
+    style={{ height: `calc(100% - ${(normalizedRotation / (2 * Math.PI)) * 100}%)` }}
+    >
+    </motion.div>
     <section className = "w-full h-screen relative">
-      <Canvas className = {`w-full h-screen bg-transparent ${isRotating ? "cursor-grabbing": "cursor-grab"}`}
+      <div className = "absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
+        <Activity mode = {currentStage ? "visible" : "hidden"}>
+          <HomeInfo currentStage={currentStage}/>
+        </Activity>
+      </div>
+        <Canvas className = {`w-full h-screen bg-transparent ${isRotating ? "cursor-grabbing": "cursor-grab"}`}
       camera = {{near: 0.1, far: 100, fov: 75}}
       dpr={[1, 2]}
       gl={{ 
@@ -70,6 +82,7 @@ export default function Home() {
           isRotating = {isRotating}
           />
           <Island
+          setNormalizedRotation = {setNormalizedRotation}
           scale = {screenScale}
           isRotating = {isRotating}
           setIsRotating = {setIsRotating}
@@ -79,5 +92,6 @@ export default function Home() {
         
       </Canvas>
     </section>
+    </>
   );
 }
