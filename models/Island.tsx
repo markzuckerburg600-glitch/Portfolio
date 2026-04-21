@@ -20,7 +20,7 @@ export default function Island({isRotating, setIsRotating, setCurrentStage, scal
   const rotationSpeed = useRef(0)
   const keyPressed = useRef<string | null>(null)
   const dampingFactor = 0.95
-  const keyRotationSpeed = 0.01
+  const keyRotationSpeed = 0.025
   const pointerSpeed = 0.0075
 
 
