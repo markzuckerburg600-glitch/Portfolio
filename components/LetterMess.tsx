@@ -15,7 +15,7 @@ function LetterMess(ref: React.RefObject<HTMLDivElement>) {
   letters.forEach(letter => {
     const speed = parseFloat(letter.getAttribute('aria-label') || "1")
     gsap.to(letter, {
-        y: (1 - speed) * ScrollTrigger.maxScroll(window) + 30,
+        y: Math.min((1 - speed) * ScrollTrigger.maxScroll(window) + 20, 600),
         rotation: RandomRotation(),
         ease: "power1.inOut",
         duration: 1.5,
