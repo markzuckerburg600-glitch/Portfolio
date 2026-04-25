@@ -15,12 +15,12 @@ export default function Letters({ word }: { word: string }) {
             <div
             aria-label={getRandomSpeed().toString()}
             key={i}
-            className = "font-serif letter lg:text-7xl md:text-5xl sm:text-4xl font-extrabold"
+            className = "text-black font-serif letter lg:text-7xl md:text-5xl sm:text-4xl font-extrabold"
             suppressHydrationWarning
             >
                 {letter}
             </div>
-        ))}  
+        ))}
     </>
   )
 }

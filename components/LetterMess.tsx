@@ -1,51 +1,76 @@
 "use client"
-import { useRef, useEffect, Fragment } from "react"
+import { useRef, Fragment } from "react"
 import Letters from "./Letters"
 import { lines } from "@/lib/constants"
 import gsap from "gsap"
+import { useGSAP } from "@gsap/react"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 gsap.registerPlugin(ScrollTrigger)
+
 function RandomRotation() {
     return Math.random() * 90 - 45
 }
 
-function LetterMess(ref: React.RefObject<HTMLDivElement>) {
-  const letters = ref.current?.querySelectorAll('.letter') || []
-  letters.forEach(letter => {
-    const speed = parseFloat(letter.getAttribute('aria-label') || "1")
-    gsap.to(letter, {
-        y: Math.min((1 - speed) * ScrollTrigger.maxScroll(window) + 20, 600),
-        rotation: RandomRotation(),
-        ease: "power1.inOut",
-        duration: 1.5,
-        scrollTrigger: {
-            trigger: document.documentElement, 
-            start: 0,
-            end: window.innerHeight,
-            scrub: true,
-            invalidateOnRefresh: true,
-        }
-    })
-  })
-}
-
 export default function LetterMessAnimation() {
-    const ref = useRef<HTMLDivElement>(null)
-    useEffect(() => {
-        if (!ref.current) return 
-        LetterMess(ref)
-    }, [])
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    useGSAP(() => {
+        if (!containerRef.current) return
+
+        const letters = containerRef.current.querySelectorAll('.letter')
+        
+        letters.forEach((letter) => {
+            const speed = parseFloat(letter.getAttribute('aria-label') || "1")
+            
+            gsap.from(letter, {
+                opacity: 0,
+                duration: 1,
+                ease: "power2.out",
+            })
+
+            gsap.to(letter, {
+                y: Math.min((1 - speed) * ScrollTrigger.maxScroll(window) + 20, 800),
+                rotation: RandomRotation(),
+                ease: "power1.inOut",
+                duration: 1.5,
+                scrollTrigger: {
+                    trigger: document.documentElement,
+                    start: 0,
+                    end: window.innerHeight,
+                    scrub: true,
+                    invalidateOnRefresh: true,
+                }
+            })
+        })
+
+        gsap.from("#emoji", {
+            y: 100,
+            opacity: 0,
+            duration: 1,
+            ease: "power2.out",
+            delay: 0.5
+        })
+
+        return () => {
+            ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+        }
+        // Only affect container
+    }, { scope: containerRef })
+
     return (
-        <div ref={ref} className = "mt-50">
+        <div ref={containerRef} className = "mt-25 overflow-hidden">
             <div className = "mb-100 flex h-screen justify-start flex-row">
-                 {lines.map((line, i) => (
+                 {lines.map((line) => (
                     <Fragment key = {line}>
-                    <div className = "flex flex- ml-3">
+                    <div className = "flex ml-3">
                         <Letters word = {line}/>
                     </div>
                     </Fragment>
                  ))}
+            <div className="ml-3 font-serif lg:text-7xl md:text-5xl sm:text-4xl font-extrabold" id = "emoji">
+                🤗
+            </div>
             </div>
         </div>
     )

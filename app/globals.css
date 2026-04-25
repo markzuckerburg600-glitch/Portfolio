@@ -132,3 +132,10 @@
 body {
   cursor: url("/cursor.png"), auto;
 }
+
+@utility masked-img {
+  mask-image: url("/circlemask.jpg");
+  mask-repeat: no-repeat;
+  mask-position: -3rem top;
+  mask-size: 56%;
+}
