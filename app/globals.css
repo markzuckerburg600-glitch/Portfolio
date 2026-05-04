@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Georama:ital,wght@0,100..900;1,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -127,10 +128,6 @@
   html {
     @apply font-sans;
   }
-}
-
-body {
-  cursor: url("/cursor.png"), auto;
 }
 
 @utility masked-img {

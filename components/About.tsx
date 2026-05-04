@@ -1,12 +1,14 @@
 import gsap from "gsap" 
-import { SplitText } from "gsap/all"
+import { SplitText, TextPlugin } from "gsap/all"
 import { useGSAP } from "@gsap/react"
 import { ScrollTrigger, CSSPlugin } from "gsap/all"
 import Image from "next/image"
 import { Montserrat } from "next/font/google"
-import { SiPytorch, SiNextdotjs, SiTailwindcss, SiLangchain, SiGsap, SiThreedotjs } from "react-icons/si"
 import { useMediaQuery } from "react-responsive"
+import { SiPytorch, SiNextdotjs, SiTailwindcss, SiLangchain, SiGsap, SiThreedotjs } from "react-icons/si"
+import { FaMicrophone, FaVideo, FaChessKnight, FaFlask, FaBook, FaMicroscope, FaMusic, FaHandHoldingHeart } from "react-icons/fa"
 
+gsap.registerPlugin(TextPlugin)
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -28,36 +30,50 @@ const rightExpertise = [
 ]
 
 const realExpertisesLeft = [
-  { title: "Public Speaking", icon: <SiGsap/> },
-  { title: "Video Editing", icon: <SiGsap/> },
-  { title: "Chess", icon: <SiGsap/> },
-  { title: "Chemistry", icon: <SiGsap/> },
+  { title: "Public Speaking", icon: <FaMicrophone /> },
+  { title: "Video Editing", icon: <FaVideo /> },
+  { title: "Chess", icon: <FaChessKnight /> },
+  { title: "Chemistry", icon: <FaFlask /> },
 ]
 
 const realExpertisesRight = [
-  { title: "Tutoring", icon: <SiGsap/> },
-  { title: "Scientific Research", icon: <SiGsap/> },
-  { title: "Piano", icon: <SiGsap/> },
-  { title: "Volunteer Work", icon: <SiGsap/> },
+  { title: "Tutoring", icon: <FaBook /> },
+  { title: "Scientific Research", icon: <FaMicroscope /> },
+  { title: "Piano", icon: <FaMusic /> },
+  { title: "Volunteer Work", icon: <FaHandHoldingHeart /> },
 ]
 
 gsap.registerPlugin(ScrollTrigger, CSSPlugin)
 export default function About() {
-// Contains the mask and the bento layout
   const isMobile = useMediaQuery({ maxWidth: 768 })
+  const yDistance = isMobile ? -35 : -55;
+// Contains the mask and the bento layout
   useGSAP(() => {
     const maskTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: "#container",
         start: "top top",
-        end: "+=1300",
+        end: "+=2000",
         scrub: 1.5,
         pin: true,
       }
     })
 
     maskTimeline.
-    to("#coding", {
+    from("#coding-title-wrapper", {
+      opacity: 0,
+      y: yDistance,
+      duration: 1.5,
+      ease: "power2.inOut"
+    })
+    .to("#coding-title-wrapper", {
+      opacity: 1,
+      y: 0,
+      duration: 1,
+      ease: "power2.inOut"
+    })
+    // Fade out the coding text
+    .to("#coding", {
       opacity: 0,
       duration: 2,
       ease: "power2.inOut"
@@ -68,11 +84,25 @@ export default function About() {
       maskSize: "200%",
       ease: "power2.inOut"
     })
+    .to("#coding-title", {
+      opacity: 0,
+      y: -50,
+      scale: 0.5,
+      duration: 2,
+      ease: "power2.inOut"
+    })
+    .to("#new-text-appear", {
+      opacity: 1,
+      duration: 5,
+      ease: "power2.inOut",
+      y: yDistance,
+      scale: 1.2,
+    })
     .to("#real", {
-      delay: 0.5,
+      delay: 5,
       opacity: 1,
       y: -100,
-      duration: 2,
+      duration: 4,
       ease: "power2.inOut",
       scale: 1.1,
     })
@@ -90,9 +120,24 @@ export default function About() {
           alt = "Ryan Chen"
           width = {400}
           height = {400}/>
-          <h1 className={`absolute top-10 text-[7rem] font-bold opacity-50 ${montserrat.className} z-10`}> 
-            <span className="bg-linear-to-r from-[#f42e13] to-[#046fc1] bg-clip-text text-transparent">What I Offer</span> 
+          <div className={`absolute top-10 lg:text-[7rem] md:text-[7rem] text-6xl font-bold ${montserrat.className} z-10`} id = "coding-title">
+            <h1>
+              <span className="bg-linear-to-r from-[#f42e13] to-[#046fc1] bg-clip-text text-transparent">
+                My Coding
+                <br/>
+                <span className="text-4xl flex items-center justify-center text-black underline"> Experience</span>
+              </span>
+            </h1>
+          </div>
+
+          <h1 className={`opacity-0 absolute top-10 lg:text-[7rem] md:text-[7rem] text-6xl font-bold ${montserrat.className} z-10`} id = "new-text-appear">
+            <span className="bg-linear-to-r from-[#f42e13] to-[#046fc1] bg-clip-text text-transparent" id = "skills-title">
+              My Other
+              <br/>
+              <span className="text-4xl flex items-center justify-center bg-linear-to-r from-[#00bef8] to-[#00365f] bg-clip-text text-transparent"> Skills</span>
+            </span>
           </h1>
+
           {/* Fading out section */}
           <section className = "flex flex-col items-center mt-110 relative z-10" id = "coding">
           <div className = "grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl px-8">

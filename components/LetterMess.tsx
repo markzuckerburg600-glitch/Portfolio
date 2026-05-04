@@ -19,9 +19,10 @@ export default function LetterMessAnimation() {
         if (!containerRef.current) return
 
         const letters = containerRef.current.querySelectorAll('.letter')
+        const triggers: ScrollTrigger[] = []
         
         letters.forEach((letter) => {
-            const speed = parseFloat(letter.getAttribute('aria-label') || "1")
+            const speed = parseFloat(letter.getAttribute('data-speed') || "1")
             
             gsap.from(letter, {
                 opacity: 0,
@@ -29,33 +30,36 @@ export default function LetterMessAnimation() {
                 ease: "power2.out",
             })
 
-            gsap.to(letter, {
-                y: Math.min((1 - speed) * ScrollTrigger.maxScroll(window) + 20, 800),
-                rotation: RandomRotation(),
-                ease: "power1.inOut",
-                duration: 1.5,
-                scrollTrigger: {
-                    trigger: document.documentElement,
-                    start: 0,
-                    end: window.innerHeight,
-                    scrub: true,
-                    invalidateOnRefresh: true,
-                }
+            const trigger = ScrollTrigger.create({
+                trigger: document.documentElement,
+                start: 0,
+                end: window.innerHeight,
+                scrub: true,
+                invalidateOnRefresh: true,
+                animation: gsap.to(letter, {
+                    y: Math.min((1 - speed) * ScrollTrigger.maxScroll(window) + 20, 800),
+                    rotation: RandomRotation(),
+                    ease: "power1.inOut",
+                    duration: 1.5,
+                })
             })
+            triggers.push(trigger)
         })
 
-        gsap.from("#emoji", {
-            y: 100,
-            opacity: 0,
-            duration: 1,
-            ease: "power2.out",
-            delay: 0.5
-        })
+        const emojiElement = containerRef.current.querySelector("#emoji")
+        if (emojiElement) {
+            gsap.from(emojiElement, {
+                y: 100,
+                opacity: 0,
+                duration: 1,
+                ease: "power2.out",
+                delay: 0.5
+            })
+        }
 
         return () => {
-            ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+            triggers.forEach(trigger => trigger.kill())
         }
-        // Only affect container
     }, { scope: containerRef })
 
     return (

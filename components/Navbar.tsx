@@ -10,6 +10,7 @@ export default function Navbar() {
   ]
   const pathName = usePathname()
   return (
+    pathName !== "/projects" && (
       <nav className = "gap-3 bg-transparent p-3 absolute z-10 w-full">
         <ul className = "flex flex-row justify-around">
         {links.map((link, i) => (
@@ -21,5 +22,6 @@ export default function Navbar() {
         ))}
         </ul>
       </nav>
+    )
   )
 }
